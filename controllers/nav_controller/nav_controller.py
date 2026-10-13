@@ -1,93 +1,96 @@
-"""nav_controller.py - Step 0 sanity check for the Component A robot.
+"""nav_controller.py - Component A: wander, build an occupancy grid, log the path.
 
-Purpose: prove that Python, Webots and the TurtleBot3Burger's LiDAR and
-motors all work together. This is NOT the final navigation controller.
-The perception, planning and PID code will replace it step by step.
-
-What it does:
-  1. Finds the two wheel motors and the LiDAR by name.
-  2. Drives the robot forward slowly.
-  3. Prints the nearest LiDAR reading once per second.
-  4. Stops when something is closer than STOP_DISTANCE.
+Beam convention found by testing: beam 0 points BACKWARDS and the index runs
+clockwise, so beam 180 is straight ahead, ~90 is left and ~270 is right.
 """
-
 import math
+import numpy as np
 from controller import Robot
 from odometry import Odometry
+from occupancy_grid import OccupancyGrid
 
-# ---- Settings you can change -------------------------------------------
-WHEEL_SPEED = 2.0       # rad/s. The Burger's maximum is about 6.67 rad/s.
-STOP_DISTANCE = 0.20    # metres. Stop if anything is closer than this.
-PRINT_EVERY = 1.0       # seconds between printed LiDAR readings.
-# -------------------------------------------------------------------------
+FORWARD_SPEED = 3.0     # rad/s  (about 0.1 m/s)
+TURN_SPEED = 2.0        # rad/s  (wheels opposite directions)
+FRONT_STOP = 0.30       # m  start turning below this
+FRONT_CLEAR = 0.50      # m  stop turning above this
+GRID_EVERY = 4          # steps between grid updates
+SAVE_EVERY = 5.0        # s of simulated time between saves
+PRINT_EVERY = 1.0
 
 robot = Robot()
-time_step = int(robot.getBasicTimeStep())   # simulation step in ms
+time_step = int(robot.getBasicTimeStep())
 
-# ---- Devices. These names come from the TurtleBot3Burger model. ----------
 left_motor = robot.getDevice("left wheel motor")
 right_motor = robot.getDevice("right wheel motor")
 lidar = robot.getDevice("LDS-01")
-
-# getDevice() returns None when the name is wrong, so fail with a clear message.
-for name, device in (("left wheel motor", left_motor),
-                     ("right wheel motor", right_motor),
-                     ("LDS-01", lidar)):
-    if device is None:
-        raise RuntimeError(f"Device '{name}' not found. Check its name in the scene tree.")
-
-# ---- Motor setup. Velocity control needs position = infinity. ------------
+left_sensor = robot.getDevice("left wheel sensor")
+right_sensor = robot.getDevice("right wheel sensor")
 for motor in (left_motor, right_motor):
     motor.setPosition(float("inf"))
     motor.setVelocity(0.0)
-
-# ---- LiDAR setup. It returns nothing until it is enabled. ----------------
 lidar.enable(time_step)
-left_sensor = robot.getDevice("left wheel sensor")
-right_sensor = robot.getDevice("right wheel sensor")
 left_sensor.enable(time_step)
 right_sensor.enable(time_step)
-n_beams = lidar.getHorizontalResolution()
-fov_deg = math.degrees(lidar.getFov())
+compass = robot.getDevice("compass")
+compass.enable(time_step)
 max_range = lidar.getMaxRange()
-print(f"LiDAR: {n_beams} beams, FOV {fov_deg:.0f} deg, max range {max_range} m")
-print(f"Time step: {time_step} ms")
-for i in range(robot.getNumberOfDevices()):
-    d = robot.getDeviceByIndex(i)
-    print("device:", d.getName(), "type:", d.getNodeType())
 
-steps_per_print = max(1, int(PRINT_EVERY * 1000 / time_step))
-step_count = 0
-stopped = False
+grid = OccupancyGrid()
 odom = None
+path = []
+path_odom = []
+turn_dir = 0            # 0 = driving, +1 = turning left, -1 = turning right
+step_count = 0
+print_steps = max(1, int(PRINT_EVERY * 1000 / time_step))
+save_steps = max(1, int(SAVE_EVERY * 1000 / time_step))
 
-# ---- Main loop: read sensors -> decide -> command motors -> step. --------
 while robot.step(time_step) != -1:
     l_pos = left_sensor.getValue()
     r_pos = right_sensor.getValue()
+    cv = compass.getValues()
+    heading = math.atan2(cv[0], cv[1])     # world heading from the compass (rad); this compass reads north along +y at heading 0
     if odom is None:
-        odom = Odometry(l_pos, r_pos, x=-1.5, y=-1.5, theta=0.0)
+        odom = Odometry(l_pos, r_pos, x=-1.5, y=-1.5, theta=0.0)       # wheels only
+        fused = Odometry(l_pos, r_pos, x=-1.5, y=-1.5, theta=heading)  # wheels + compass
     else:
         odom.update(l_pos, r_pos)
-    ranges = lidar.getRangeImage()                      # list of distances in metres
-    valid = [r for r in ranges if math.isfinite(r)]     # drop inf (no hit) and nan
-    nearest = min(valid) if valid else float("inf")
+        fused.update(l_pos, r_pos, heading=heading)
+    pose = (fused.x, fused.y, fused.theta)
 
-    if nearest < STOP_DISTANCE:
-        left_motor.setVelocity(0.0)
-        right_motor.setVelocity(0.0)
-        if not stopped:
-            print(f"Obstacle at {nearest:.2f} m - stopping.")
-            stopped = True
+    ranges = lidar.getRangeImage()
+    r = np.array(ranges)
+    r = np.where(np.isfinite(r), r, max_range)       # no hit -> treat as max range
+
+    # ---- Perception: update the map and log the path ----
+    if step_count % GRID_EVERY == 0:
+        grid.update(pose, ranges, max_range)
+        path.append(pose)
+        path_odom.append((odom.x, odom.y, odom.theta))
+
+    # ---- Reactive wandering ----
+    front = float(np.min(r[150:211]))
+    left_clear = float(np.mean(r[60:121]))
+    right_clear = float(np.mean(r[240:301]))
+    if turn_dir == 0:
+        if front < FRONT_STOP:
+            turn_dir = 1 if left_clear >= right_clear else -1
+    elif front > FRONT_CLEAR:
+        turn_dir = 0
+
+    if turn_dir == 0:
+        left_motor.setVelocity(FORWARD_SPEED)
+        right_motor.setVelocity(FORWARD_SPEED)
     else:
-        left_motor.setVelocity(WHEEL_SPEED)
-        right_motor.setVelocity(WHEEL_SPEED)
+        left_motor.setVelocity(-turn_dir * TURN_SPEED)
+        right_motor.setVelocity(turn_dir * TURN_SPEED)
 
-    if step_count % steps_per_print == 0:
-        print(f"t={robot.getTime():5.1f}s  nearest obstacle: {nearest:.2f} m")
-        print(f"        odom pose: x={odom.x:.3f}  y={odom.y:.3f}  theta={odom.theta:.3f}")
-    if step_count == steps_per_print:          # about 1 second into the run
-        import numpy as np
-        np.save("../../data/scan_start.npy", np.array(ranges))
-        print("Saved scan to data/scan_start.npy")
+    # ---- Logging and saving ----
+    if step_count % print_steps == 0:
+        print(f"t={robot.getTime():6.1f}s  front={front:.2f} m  "
+              f"fused=({fused.x:.2f}, {fused.y:.2f}, {fused.theta:.2f})  "
+              f"wheels-only theta={odom.theta:.2f}")
+    if step_count % save_steps == 0 and step_count > 0:
+        np.save("../../data/occupancy_logodds.npy", grid.logodds)
+        np.save("../../data/odom_path.npy", np.array(path))
+        np.save("../../data/odom_path_wheels.npy", np.array(path_odom))
     step_count += 1
