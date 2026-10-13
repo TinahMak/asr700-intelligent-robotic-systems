@@ -1,19 +1,61 @@
 #VRML_SIM R2025a utf8
 
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/robotis/turtlebot/protos/TurtleBot3Burger.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.00999942349572433 0.999909017938637 -0.00905358353050205 1.6700905384450908
-  position -0.2807840833174351 -0.011120456351879665 17.769012872558555
+  orientation 0 1 0 1.5708
+  position 0 0 6
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 4 4
 }
-TexturedBackgroundLight {
+TurtleBot3Burger {
+  hidden position_0_0 1.203203640673122e-11
+  hidden position_0_1 7.401108122170087e-12
+  hidden position_0_2 1.041099213522147e-06
+  hidden position2_0_2 0.00021818835503270654
+  hidden position3_0_2 -3.2748474416802245e-07
+  hidden rotation_10 0.004771338321915746 0.9999874915058262 -0.0015003874509309425 0.00021819108419271051
+  translation -1.4999999995453517 -1.5000000005214933 -0.0002477013487637847
+  rotation -0.002119545665097706 -0.9999977537491603 4.775706250970452e-06 0.004640846749705085
 }
-TexturedBackground {
+WoodenBox {
+  translation 0 0.5 0.15
+  name "box1"
+  size 0.3 0.3 0.3
+}
+WoodenBox {
+  translation 1 -0.5 0.15
+  name "box2"
+  size 0.3 0.3 0.3
+}
+WoodenBox {
+  translation -0.5 1 0.15
+  name "box3"
+  size 0.3 0.3 0.3
+}
+WoodenBox {
+  translation 0.8 1 0.15
+  name "box4"
+  size 0.3 0.3 0.3
+}
+WoodenBox {
+  translation -1 0 0.15
+  name "box5"
+  size 0.3 0.3 0.3
+}
+WoodenBox {
+  translation 0.3 -1 0.15
+  name "box6"
+  size 0.3 0.3 0.3
 }
