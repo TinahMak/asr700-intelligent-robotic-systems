@@ -13,6 +13,7 @@ What it does:
 
 import math
 from controller import Robot
+from odometry import Odometry
 
 # ---- Settings you can change -------------------------------------------
 WHEEL_SPEED = 2.0       # rad/s. The Burger's maximum is about 6.67 rad/s.
@@ -42,18 +43,32 @@ for motor in (left_motor, right_motor):
 
 # ---- LiDAR setup. It returns nothing until it is enabled. ----------------
 lidar.enable(time_step)
+left_sensor = robot.getDevice("left wheel sensor")
+right_sensor = robot.getDevice("right wheel sensor")
+left_sensor.enable(time_step)
+right_sensor.enable(time_step)
 n_beams = lidar.getHorizontalResolution()
 fov_deg = math.degrees(lidar.getFov())
 max_range = lidar.getMaxRange()
 print(f"LiDAR: {n_beams} beams, FOV {fov_deg:.0f} deg, max range {max_range} m")
 print(f"Time step: {time_step} ms")
+for i in range(robot.getNumberOfDevices()):
+    d = robot.getDeviceByIndex(i)
+    print("device:", d.getName(), "type:", d.getNodeType())
 
 steps_per_print = max(1, int(PRINT_EVERY * 1000 / time_step))
 step_count = 0
 stopped = False
+odom = None
 
 # ---- Main loop: read sensors -> decide -> command motors -> step. --------
 while robot.step(time_step) != -1:
+    l_pos = left_sensor.getValue()
+    r_pos = right_sensor.getValue()
+    if odom is None:
+        odom = Odometry(l_pos, r_pos, x=-1.5, y=-1.5, theta=0.0)
+    else:
+        odom.update(l_pos, r_pos)
     ranges = lidar.getRangeImage()                      # list of distances in metres
     valid = [r for r in ranges if math.isfinite(r)]     # drop inf (no hit) and nan
     nearest = min(valid) if valid else float("inf")
@@ -70,6 +85,7 @@ while robot.step(time_step) != -1:
 
     if step_count % steps_per_print == 0:
         print(f"t={robot.getTime():5.1f}s  nearest obstacle: {nearest:.2f} m")
+        print(f"        odom pose: x={odom.x:.3f}  y={odom.y:.3f}  theta={odom.theta:.3f}")
     if step_count == steps_per_print:          # about 1 second into the run
         import numpy as np
         np.save("../../data/scan_start.npy", np.array(ranges))
