@@ -70,4 +70,8 @@ while robot.step(time_step) != -1:
 
     if step_count % steps_per_print == 0:
         print(f"t={robot.getTime():5.1f}s  nearest obstacle: {nearest:.2f} m")
+    if step_count == steps_per_print:          # about 1 second into the run
+        import numpy as np
+        np.save("../../data/scan_start.npy", np.array(ranges))
+        print("Saved scan to data/scan_start.npy")
     step_count += 1
