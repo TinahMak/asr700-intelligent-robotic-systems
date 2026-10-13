@@ -8,3 +8,4 @@ venv/
 # Webots per-user cache files
 .*.wbproj
 *.wbproj~
+worlds/.*.jpg
