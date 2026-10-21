@@ -1,0 +1,8 @@
+scenario       planner   length (m)  expanded  time (ms)
+S1 SW -> NE    Dijkstra        4.45      4441       22.5
+S1 SW -> NE    A*              4.45       588        4.5
+S2 NW -> SE    Dijkstra        4.36      4390       21.5
+S2 NW -> SE    A*              4.36       152        1.0
+S3 W -> E      Dijkstra        3.31      3658       18.9
+S3 W -> E      A*              3.31       113        0.7
+Saved data/planned_path_astar.npy (A* path, world coordinates)
