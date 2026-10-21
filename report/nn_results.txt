@@ -1,0 +1,19 @@
+Loaded 2401 scans of 360 beams
+Boxes (x, y, half-size): [(0.0, 0.5, 0.15), (1.0, -0.5, 0.15), (-0.5, 1.0, 0.15), (0.8, 1.0, 0.15), (-1.0, 0.0, 0.15), (0.3, -1.0, 0.15)]
+Discarded 0 ambiguous scans
+Class counts: {'clear': 1135, 'box': 150, 'wall': 1116}
+split train/val/test = 1680/321/400
+early stopping at epoch 159 (best validation loss 0.0414)
+
+Test accuracy: 94.2 %   (majority-class baseline: 32.0 %)
+
+Confusion matrix (rows = true, columns = predicted):
+           clear     box    wall
+clear        236      10       4
+box            6      16       0
+wall           1       2     125
+
+class     precision   recall       F1  support
+clear         0.971    0.944    0.957      250
+box           0.571    0.727    0.640       22
+wall          0.969    0.977    0.973      128
