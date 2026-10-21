@@ -12,3 +12,10 @@
 - Fused pose (wheel distance + compass heading) matched the true position to a few cm at t = 152 s: fused (-0.56, -1.77), true about (-0.56, -1.8) read from the 3D view.
 - Occupancy grid: 80 x 80 cells, 0.05 m, log-odds with L_OCC = +0.85, L_FREE = -0.40, clamp +/-5 (report/occupancy_map.png).
 - Limitations: LiDAR is about 3 cm behind the robot centre (ignored); box interiors stay unknown; simple reactive wandering covers the arena unevenly.
+
+## A1 findings: camera and fusion
+- The Burger has no camera. One was added in the extension slot (R2025a). In this setup only the camera node `cam_c` (rotation 0 1 0 1.5708) looks forward; the unrotated one looks at the sky (report/camera_orientation_test.png). The live overlay is unreliable, so saved images were used to find the orientation.
+- OpenCV: HSV masks for boxes (H 10-20, S>=80, V 40-170), shadows (V<45), walls (H 100-125, V<112), then morphological open/close.
+- Ranging: pinhole model, camera 0.12 m above the floor, horizontal FOV 1.0 rad (fx = 293 px). depth = 0.12 * fx / (row - 120).
+- Fusion: per image column, camera range vs the LiDAR beam at the same bearing; agreement within 0.30 m -> inverse-variance fusion (sigma LiDAR 0.02 m, camera 5% of range); otherwise the LiDAR is trusted.
+- Limitations: colour thresholds depend on the lighting and floor texture; a shadowed box side can be mistaken for wall; far-range estimates are sensitive to a one-pixel error.
