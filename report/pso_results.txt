@@ -1,0 +1,15 @@
+Brute force over 65536 assignments took 1.3 s: optimum cost 3.595
+
+method                              evals  mean cost    best   worst  hit optimum
+brute force (optimum)               65536      3.595
+greedy nearest robot                    4      4.844
+random search (basic budget)         1830      4.383   3.769   4.899         0/20
+PSO basic (global best)              1830      4.158   3.595   4.853         3/20
+random search (improved budget)      3660      4.119   3.595   4.310         1/20
+PSO improved (ring, decay)           3660      3.734   3.595   4.236        10/20
+
+Best improved-PSO assignment (task -> robot): [3, 2, 1, 0, 2, 0, 3, 1] cost 3.595
+  robot0: tasks [5, 3], route length 2.59 m
+  robot1: tasks [7, 2], route length 2.40 m
+  robot2: tasks [4, 1], route length 2.49 m
+  robot3: tasks [6, 0], route length 2.56 m
