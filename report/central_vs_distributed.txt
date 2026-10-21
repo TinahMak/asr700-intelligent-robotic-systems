@@ -1,0 +1,13 @@
+  N |         CENTRALISED          |         DISTRIBUTED ring         |     DISTRIBUTED complete    
+    | rounds  time s    msgs leader rx | rounds   time s      msgs max rx | rounds  time s     msgs
+  4 |      2     0.4       6         3 |      5      1.0        40      2 |      1     0.2       12
+  8 |      2     0.4      14         7 |     22      4.4       352      2 |      1     0.2       56
+ 16 |      2     0.4      30        15 |     67     13.4      2144      2 |      1     0.2      240
+ 32 |      2     0.4      62        31 |    341     68.2     21824      2 |      1     0.2      992
+ 64 |      2     0.4     126        63 |    795    159.0    101760      2 |      1     0.2     4032
+
+Failure experiment, N = 8, one robot dies after round 3 (initial disagreement 2.03 m)
+architecture / failure                       final disagreement (m)   error of agreed point (m)
+centralised, LEADER fails                                     2.033                no agreement
+centralised, a follower fails                                 0.000                       0.000
+distributed ring, robot 3 fails                             0.00000                       0.092
