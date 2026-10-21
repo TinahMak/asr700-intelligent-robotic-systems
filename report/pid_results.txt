@@ -1,0 +1,13 @@
+gains                                 rise (s)  overshoot %  settle 2% (s)      IAE
+P  Kp=1                                   1.89          0.0           3.46    1.571
+P  Kp=4                                   0.51          3.5           1.28    0.676
+P  Kp=12 (high gain)                      0.48          7.9           1.22    0.672
+PD Kp=4 Kd=0.4                            0.64          0.0           1.15    0.716
+PID Kp=4 Ki=1 Kd=0.4                      0.54          9.7           7.52    1.226
+Tuned (grid search) (8, 0.0, 0.8)         0.54          0.0           0.90    0.663
+
+Path following (gains Kp=8, Ki=0.0, Kd=0.8, cruise 0.15 m/s)
+  time to goal       : 29.5 s
+  mean cross-track   : 1.5 cm
+  max cross-track    : 7.1 cm
+  final distance to goal: 8.0 cm
