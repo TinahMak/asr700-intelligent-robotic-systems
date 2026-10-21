@@ -19,3 +19,30 @@
 - Ranging: pinhole model, camera 0.12 m above the floor, horizontal FOV 1.0 rad (fx = 293 px). depth = 0.12 * fx / (row - 120).
 - Fusion: per image column, camera range vs the LiDAR beam at the same bearing; agreement within 0.30 m -> inverse-variance fusion (sigma LiDAR 0.02 m, camera 5% of range); otherwise the LiDAR is trusted.
 - Limitations: colour thresholds depend on the lighting and floor texture; a shadowed box side can be mistaken for wall; far-range estimates are sensitive to a one-pixel error.
+
+## Component A (summary of results, from the runs)
+- Closed loop in Webots (A* path, PID Kp=8, Ki=0, Kd=0.8, fused pose): 29.8 s, mean cross-track 1.4 cm,
+  max 7.0 cm (at path corners: the lookahead cuts them), final distance to goal 8.5 cm.
+  Offline simulation of the same controller: 29.5 s, mean 1.5 cm -> the kinematic model is validated.
+- PID tuning: P Kp=1 slow (settle 3.46 s); high P Kp=12 overshoots 7.9 %; PD removes the overshoot;
+  adding I (Ki=1) made it worse (9.7 % overshoot, 7.52 s settle) because there is no steady-state error and
+  the integral winds up; tuned (8, 0, 0.8): rise 0.54 s, overshoot 0 %, settle 0.90 s.
+- Derivative term gives +-0.3 cm ripple (amplifies compass/wheel quantisation noise).
+- Webots warning "requested velocity 6.67 exceeds maxVelocity" fixed by capping wheel speed at 6.6 rad/s.
+
+## Component B (summary of results)
+- Multi-robot world: 4 TurtleBot3 Burgers, Emitter/Receiver on each, every robot heard all 3 others.
+- Average consensus on a 4-ring (eps=0.3, round every 0.2 s): states reach the average (0,0) within ~3 s;
+  disagreement falls geometrically (straight line on the log plot). Robots end in a ring of 0.35 m round the centre.
+- PSO task allocation: see report/pso_results.txt. Basic PSO converges prematurely (swarm collapses after ~600
+  evaluations); ring topology + inertia decay + reflecting borders fixed most of it. Brute force takes ~1 s for
+  4^8 options, so PSO only pays off for larger problems.
+- Neural network (NumPy MLP 46-32-16-3) on LiDAR scans, 5863 samples after cleaning: test accuracy 90.7 %
+  (majority baseline 44.3 %). Box class weakest (precision 0.76, recall 0.82). Accuracy by distance ahead:
+  99.4 % (<0.5 m), 94.6 % (0.5-0.8), 75.0 % (0.8-1.2), 92.0 % (1.2-2.0), 100 % (>2.0).
+  Earlier 20-minute dataset: 94.2 % test accuracy but only 22 box samples in the test set (noisy estimate).
+- Data issues found: the wander controller sometimes spun in place in a corner (1338 scans capped); LiDAR noise
+  made a scan-difference duplicate filter useless, a pose-based filter worked; block-wise split needed because
+  consecutive scans are almost identical.
+- Centralised vs distributed: see report/central_vs_distributed.txt (ring needs ~N^2 rounds, centralised needs 2
+  rounds but the leader receives N-1 messages per round and is a single point of failure).

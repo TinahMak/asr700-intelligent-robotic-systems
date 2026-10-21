@@ -21,6 +21,20 @@ scans, poses = data["scans"].astype(float), data["poses"]
 print(f"Loaded {len(scans)} scans of {scans.shape[1]} beams")
 scans = np.where(np.isfinite(scans), np.minimum(scans, MAX_R), MAX_R)
 
+# drop near-duplicate consecutive scans: for part of the run the robot was stuck turning in a corner,
+# which produced hundreds of identical scans that would leak between train and test
+kept, anchor, run = [0], 0, 1
+for n in range(1, len(scans)):
+    if np.hypot(poses[n, 0] - poses[anchor, 0], poses[n, 1] - poses[anchor, 1]) < 0.03:
+        run += 1                              # still at the same spot (turning in place)
+        if run <= 8:                          # keep at most 8 scans (about one sweep) per spot
+            kept.append(n)
+    else:
+        anchor, run = n, 1
+        kept.append(n)
+print(f"Removed {len(scans) - len(kept)} scans from long turn-in-place runs; {len(kept)} left")
+scans, poses = scans[kept], poses[kept]
+
 world = open("worlds/component_a.wbt").read()
 boxes = []
 for m in re.finditer(r"WoodenBox\s*\{(.*?)\n\}", world, re.S):
@@ -70,6 +84,7 @@ for b_i, b in enumerate(ub):
 Xtr, ytr = X[which == 0], labels[which == 0]
 Xva, yva = X[which == 1], labels[which == 1]
 Xte, yte = X[which == 2], labels[which == 2]
+fr_te = scans[which == 2][:, FRONT].min(1)      # distance to the nearest object straight ahead
 mu, sd = Xtr.mean(0), Xtr.std(0) + 1e-6
 Xtr, Xva, Xte = (Xtr - mu) / sd, (Xva - mu) / sd, (Xte - mu) / sd
 print(f"split train/val/test = {len(Xtr)}/{len(Xva)}/{len(Xte)}")
@@ -157,6 +172,12 @@ for i, c in enumerate(CLASSES):
     pr = cm[i, i] / max(1, cm[:, i].sum())
     rc = cm[i, i] / max(1, cm[i].sum())
     print(f"{c:8s} {pr:10.3f} {rc:8.3f} {2 * pr * rc / max(1e-9, pr + rc):8.3f} {cm[i].sum():8d}")
+
+print("\nTest accuracy by distance to the nearest object straight ahead:")
+for lo, hi in ((0, 0.5), (0.5, 0.8), (0.8, 1.2), (1.2, 2.0), (2.0, 3.6)):
+    sel = (fr_te >= lo) & (fr_te < hi)
+    if sel.sum():
+        print(f"  {lo:.1f}-{hi:.1f} m: {np.mean(pred[sel] == yte[sel]) * 100:5.1f} %  ({int(sel.sum())} scans)")
 
 np.savez("data/nn_weights.npz", mu=mu, sd=sd, **P)
 fig, ax = plt.subplots(1, 3, figsize=(16, 4.6))

@@ -12,7 +12,7 @@ from odometry import Odometry
 
 FORWARD_SPEED, TURN_SPEED = 3.0, 2.0          # wheel speeds, rad/s
 FRONT_STOP, FRONT_CLEAR = 0.30, 0.55          # start turning below 0.30 m, stop turning above 0.55 m
-SAMPLE_EVERY, T_END = 0.5, 1200.0             # s of simulated time
+SAMPLE_EVERY, T_END = 0.5, 3600.0             # s of simulated time
 START_X, START_Y = -1.5, -1.5
 
 random.seed(1)

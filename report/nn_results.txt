@@ -1,19 +1,27 @@
-Loaded 2401 scans of 360 beams
+Loaded 7201 scans of 360 beams
+Removed 1338 scans from long turn-in-place runs; 5863 left
 Boxes (x, y, half-size): [(0.0, 0.5, 0.15), (1.0, -0.5, 0.15), (-0.5, 1.0, 0.15), (0.8, 1.0, 0.15), (-1.0, 0.0, 0.15), (0.3, -1.0, 0.15)]
 Discarded 0 ambiguous scans
-Class counts: {'clear': 1135, 'box': 150, 'wall': 1116}
-split train/val/test = 1680/321/400
-early stopping at epoch 159 (best validation loss 0.0414)
+Class counts: {'clear': 2865, 'box': 408, 'wall': 2590}
+split train/val/test = 4080/880/903
+early stopping at epoch 46 (best validation loss 0.2070)
 
-Test accuracy: 94.2 %   (majority-class baseline: 32.0 %)
+Test accuracy: 90.7 %   (majority-class baseline: 44.3 %)
 
 Confusion matrix (rows = true, columns = predicted):
            clear     box    wall
-clear        236      10       4
-box            6      16       0
-wall           1       2     125
+clear        373      14      13
+box            8      81      10
+wall          28      11     365
 
 class     precision   recall       F1  support
-clear         0.971    0.944    0.957      250
-box           0.571    0.727    0.640       22
-wall          0.969    0.977    0.973      128
+clear         0.912    0.932    0.922      400
+box           0.764    0.818    0.790       99
+wall          0.941    0.903    0.922      404
+
+Test accuracy by distance to the nearest object straight ahead:
+  0.0-0.5 m:  99.4 %  (162 scans)
+  0.5-0.8 m:  94.6 %  (149 scans)
+  0.8-1.2 m:  75.0 %  (192 scans)
+  1.2-2.0 m:  92.0 %  (338 scans)
+  2.0-3.6 m: 100.0 %  (62 scans)
