@@ -33,6 +33,9 @@ left_sensor.enable(time_step)
 right_sensor.enable(time_step)
 compass = robot.getDevice("compass")
 compass.enable(time_step)
+camera = robot.getDevice("camera")
+camera.enable(time_step)
+print(f"Camera: {camera.getWidth()} x {camera.getHeight()}, FOV {camera.getFov():.2f} rad")
 max_range = lidar.getMaxRange()
 
 grid = OccupancyGrid()
@@ -84,6 +87,9 @@ while robot.step(time_step) != -1:
         left_motor.setVelocity(-turn_dir * TURN_SPEED)
         right_motor.setVelocity(turn_dir * TURN_SPEED)
 
+    if step_count == 30:
+        camera.saveImage("../../data/camera_start.png", 100)
+        print("Saved data/camera_start.png")
     # ---- Logging and saving ----
     if step_count % print_steps == 0:
         print(f"t={robot.getTime():6.1f}s  front={front:.2f} m  "

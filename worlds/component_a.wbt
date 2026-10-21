@@ -5,6 +5,7 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/robotis/turtlebot/protos/TurtleBot3Burger.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/robotis/protos/RobotisLds01.proto"
 
 WorldInfo {
 }
@@ -18,13 +19,27 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 4 4
+  wallHeight 0.5
 }
 TurtleBot3Burger {
+  extensionSlot [
+    RobotisLds01 {
+    }
+    Camera {
+      translation 0.08 0 -0.033
+      rotation 0 1 0 1.5708
+      name "camera"
+      width 320
+      height 240
+      fieldOfView 1.0
+    }
+  ]
   hidden position_0_0 1.203203640673122e-11
   hidden position_0_1 7.401108122170087e-12
   hidden position_0_2 1.041099213522147e-06
   hidden position2_0_2 0.00021818835503270654
   hidden position3_0_2 -3.2748474416802245e-07
+  hidden rotation_8 0 -1 0 1.5707959999518724
   hidden rotation_10 0.004771338321915746 0.9999874915058262 -0.0015003874509309425 0.00021819108419271051
   translation -1.4999999995453517 -1.5000000005214933 -0.0002477013487637847
   rotation -0.002119545665097706 -0.9999977537491603 4.775706250970452e-06 0.004640846749705085
