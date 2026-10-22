@@ -27,8 +27,31 @@ TurtleBot3Burger {
     }
     Camera {
       translation 0.08 0 -0.033
-      rotation 0 1 0 1.5708
       name "camera"
+      width 320
+      height 240
+      fieldOfView 1.0
+    }
+    Camera {
+      translation 0.08 0 -0.033
+      rotation 0 1 0 0.5
+      name "cam_b"
+      width 320
+      height 240
+      fieldOfView 1.0
+    }
+    Camera {
+      translation 0.08 0 -0.033
+      rotation 0 1 0 1.5708
+      name "cam_c"
+      width 320
+      height 240
+      fieldOfView 1.0
+    }
+    Camera {
+      translation 0.08 0 -0.033
+      rotation 0 1 0 -1.5708
+      name "cam_d"
       width 320
       height 240
       fieldOfView 1.0
