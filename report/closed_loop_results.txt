@@ -1,0 +1,5 @@
+Closed-loop result in Webots
+  time to goal       : 29.8 s
+  mean cross-track   : 1.4 cm
+  max cross-track    : 7.0 cm
+  final dist to goal : 8.5 cm
