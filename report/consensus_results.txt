@@ -1,0 +1,8 @@
+Laplacian eigenvalues [-0.  2.  2.  4.], lambda2=2.00, theoretical rate/round=0.40
+consensus average z: (0.000, 0.000) (expected (0, 0))
+time until disagreement < 1 cm: 1.2 s
+total messages sent by all robots: 900
+robot0: start (-1.50,-1.50) -> final (-0.28,-0.28)
+robot1: start (1.50,-1.50) -> final (0.28,-0.28)
+robot2: start (1.50,1.50) -> final (0.28,0.28)
+robot3: start (-1.50,1.50) -> final (-0.28,0.28)

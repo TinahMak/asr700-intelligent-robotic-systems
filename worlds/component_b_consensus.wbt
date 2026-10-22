@@ -1,0 +1,82 @@
+#VRML_SIM R2025a utf8
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/robotis/turtlebot/protos/TurtleBot3Burger.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/devices/robotis/protos/RobotisLds01.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0 1 0 1.5708
+  position 0 0 6
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 4 4
+  wallHeight 0.5
+}
+TurtleBot3Burger {
+  translation -1.5 -1.5 0
+  rotation 0 0 1 0.7854
+  name "robot0"
+  customData "-1.5 -1.5"
+  controller "consensus_controller"
+  extensionSlot [
+    RobotisLds01 {
+    }
+    Emitter {
+    }
+    Receiver {
+    }
+  ]
+}
+TurtleBot3Burger {
+  translation 1.5 -1.5 0
+  rotation 0 0 1 2.3562
+  name "robot1"
+  customData "1.5 -1.5"
+  controller "consensus_controller"
+  extensionSlot [
+    RobotisLds01 {
+    }
+    Emitter {
+    }
+    Receiver {
+    }
+  ]
+}
+TurtleBot3Burger {
+  translation 1.5 1.5 0
+  rotation 0 0 1 -2.3562
+  name "robot2"
+  customData "1.5 1.5"
+  controller "consensus_controller"
+  extensionSlot [
+    RobotisLds01 {
+    }
+    Emitter {
+    }
+    Receiver {
+    }
+  ]
+}
+TurtleBot3Burger {
+  translation -1.5 1.5 0
+  rotation 0 0 1 -0.7854
+  name "robot3"
+  customData "-1.5 1.5"
+  controller "consensus_controller"
+  extensionSlot [
+    RobotisLds01 {
+    }
+    Emitter {
+    }
+    Receiver {
+    }
+  ]
+}
