@@ -1,5 +1,5 @@
 ASR700 - Intelligent Robotic Systems: Autonomous Systems and Robotics project
-Student: Christinah Makocheredze  [STUDENT NUMBER]
+Student: Christinah Makocheredze  402110898
 GitHub : https://github.com/TinahMak/asr700-intelligent-robotic-systems
 
 ENVIRONMENT
